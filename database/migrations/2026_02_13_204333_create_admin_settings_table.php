@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCampaignBannersTable extends Migration
+class CreateAdminSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateCampaignBannersTable extends Migration
      */
     public function up()
     {
-        Schema::create('campaign_banners', function (Blueprint $table) {
+        Schema::create('admin_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('campaign_id')->nullable()->constrained('campaigns')->onDelete('cascade')->onUpdate('cascade');
-            $table->text('img_url');
+            $table->string('app_name')->nullable();
+            $table->longtext('logo_url')->nullable();
+            $table->longtext('icon_url')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateCampaignBannersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('campaign_banners');
+        Schema::dropIfExists('admin_settings');
     }
 }

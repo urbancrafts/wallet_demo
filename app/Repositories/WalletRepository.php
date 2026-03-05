@@ -1,17 +1,50 @@
 <?php
 namespace App\Repositories;
 
-use App\Models\Wallet;
-use App\Models\User;
-use App\Models\Transaction;
+use App\Contracts\WalletInterface;
+use App\Models\{Wallet, CryptoWallet};
+use App\Enums\TransactionType;
 use JWTAuth;
 
-class WalletRepository
+class WalletRepository implements WalletInterface
 {
-    public function __construct(Wallet $wallet, Transaction $transact){
+
+    public function __construct(Wallet $wallet, CryptoWallet $cryptoWallet, Transaction $transact){
         $this->user = JWTAuth::parseToken()->authenticate();
         $this->wallet = $wallet;
+        $this->cryptoWallet = $cryptoWallet;
         $this->transact = $transact;
+    }
+
+
+    public function findWalletsByUserId(int $userId)
+    {
+      return $this->wallet->where('user_id', $userId)->firstOrFail();
+    }
+
+    public function findCryptoWalletsByUserId(int $userId)
+    {
+      return $this->cryptoWallet->where('user_id', $userId)->firstOrFail();
+    }
+
+    public function updateWalletBalance(int $amount, TransactionType $type, int $walletID)
+    {
+        $before = $wallet->whereId($walletID)->balance;
+
+        $after = match ($type) {
+            TransactionType::CREDIT => $before + $amount,
+            TransactionType::DEBIT => $before - $amount,
+        };
+
+        if($after < 0){
+            throw new InsufficientFundsException();
+        }
+
+        $wallet->whereId($walletID)->update([
+            'balance' => $after
+        ]);
+
+        return $wallet;
     }
 
     public function findByUserIdForUpdate(int $wallet_id)

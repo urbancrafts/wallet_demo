@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWalletsTable extends Migration
+class CreateCryptoWalletsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateWalletsTable extends Migration
      */
     public function up()
     {
-        Schema::create('wallets', function (Blueprint $table) {
+        Schema::create('crypto_wallets', function (Blueprint $table) {
             $table->id();
-            $table->enum('currency', ['USD', 'EUR', 'GBP', 'NGN'])->default('NGN');
+            $table->enum('currency', ['BTC', 'ETH', 'USDT'])->default('BTC');
             $table->decimal('balance',10,2)->default(0.00);
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateWalletsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wallets');
+        Schema::dropIfExists('crypto_wallets');
     }
 }

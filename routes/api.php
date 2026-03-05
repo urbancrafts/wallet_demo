@@ -18,8 +18,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('user/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register.api');
-Route::post('user/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.api');
 
 Route::group(['middleware' => 'checkUser'], function () {
 

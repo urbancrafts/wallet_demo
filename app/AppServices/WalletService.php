@@ -4,7 +4,9 @@ namespace App\AppServices;
 use App\Repositories\WalletRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Wallet;
+
+use App\Models\{Wallet, Transaction};
+use App\Contracts\WalletInterface;
 use JWTAuth;
 
 use Exception;
@@ -12,19 +14,38 @@ use Exception;
 
 class WalletService
 {
-    public function __construct(private WalletRepository $walletRepository, Wallet $walletData) {
+    public function __construct(private WalletInterface $walletInterface, private WalletRepository $walletRepository, Wallet $walletData) {
       
+        $this->walletInterface = $walletInterface;
         $this->walletRepository = $walletRepository;
         $this->wallet = $walletData;
         
-        $this->result = (object)array(
-            'status' => false,
-            'status_code' => 200,
-            'message' => null,
-            'data' => (object) null,
-            'token' => null,
-            'debug' => null
-        );
+        
+    }
+
+    public function debit(Wallet $wallet, int $amount): Wallet {
+
+        return DB::transaction(function () use ($wallet, $amount) {
+
+            $updatedWallet = $this->walletInterface
+                ->updateBalance(
+                    $wallet,
+                    $amount,
+                    TransactionType::DEBIT
+                );
+
+            Transaction::create([
+                'sender_wallet_id' => $wallet->id,
+                'type' => TransactionType::DEBIT,
+                'amount' => $amount,
+                'balance_before' => $wallet->balance,
+                'balance_after' => $updatedWallet->balance,
+            ]);
+
+            return $updatedWallet;
+        });
+
+
     }
 
     public function performTransaction(int $userId, int $wallet_id, float $amount): string

@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class CryptoTransaction extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'sender_wallet_id',
-        'reciepient_wallet_id',
+        'crypto_wallet_id',
         'type',
         'amount',
-        'balance_before',
-        'balance_after',
-        'reference',
-        'description',
-        'status',
+        'local_currency',
+        'local_currency_value',
+        'transact_fee',
+        'rate',
     ];
 
     protected $hidden = [
@@ -26,7 +24,7 @@ class Transaction extends Model
         'updated_at'
     ];
 
-    public function wallet(){
-        return $this->belongsToMany(Wallet::class);
+    public function cryptoWallet(){
+        return $this->belongsToMany(CryptoWallet::class);
       }
 }

@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Campaign;
-class CampaignBanner extends Model
+
+class CryptoWallet extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'campaign_id',
-        'img_url'
+        'currency',
+        'balance',
+        'user_id'
     ];
 
     protected $hidden = [
@@ -19,7 +20,11 @@ class CampaignBanner extends Model
         'updated_at'
     ];
 
-    public function campaign(){
-        return $this->belongsTo(Campaign::class);
+    public function user(){
+        return $this->belongsTo(User::class);
       }
+
+    public function cryptoTransaction(){
+        return $this->hasMany(CryptoTransaction::class);
+    }
 }
